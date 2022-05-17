@@ -1,14 +1,14 @@
 #' Write bottom Boundary Condition
 #'
+#' @param project.path Path of the HYDRUS1D project
 #' @param constant.bc constant.bc
 #' @param bc.type bc.type
 #' @param bc.value bc.value
-#' @param project.path project.path
 #'
 #' @return Write bottom Boundary Condition to "SELECTOR.IN"
 #' @export
 
-write.bottom.bc<- function(constant.bc, bc.type, bc.value, project.path) {
+write.bottom.bc<- function(project.path, constant.bc, bc.type, bc.value) {
         ## Writes bottom constant boundary conditions "flux" or "head"
         input_data = readLines(con = file.path(project.path, "SELECTOR.IN"),
                                n = -1L, encoding = "unknown")
@@ -90,7 +90,7 @@ write.bottom.bc<- function(constant.bc, bc.type, bc.value, project.path) {
                 botInf_input_new = paste(botInf_input_fmt, collapse = "")
 
                 flow_block_new = c(flow_block[1:botInf_ind], botInf_input_new,
-                                   flow_block[hTab1:length(flow_block)])
+                                   flow_block[hTab1_ind:length(flow_block)])
 
 
         }

@@ -1,14 +1,14 @@
 #' Write print times in SELECTOR.IN
 #'
-#' @param project.path Location of the H1D project in the directory
-#' @param tmin Begining print time (e.g., 1)
+#' @param project.path Path of the HYDRUS1D project
+#' @param tmin Beginning print time (e.g., 1)
 #' @param tmax End print time (e.g. 240 hours)
 #' @param tstep Time step to print out put at
 #' @param TimeUnit Simulation time unit information
-
+#'
 #' @return  Write print times in "SELECTOR.IN"
 #' @export
-
+#'
 write.print.times <- function(project.path, tmin, tmax, tstep, TimeUnit){
       input.file = file.path(project.path, "SELECTOR.IN")
 

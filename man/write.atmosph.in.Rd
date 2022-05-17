@@ -15,7 +15,7 @@ write.atmosph.in(
 )
 }
 \arguments{
-\item{project.path}{project.path}
+\item{project.path}{Path of the HYDRUS1D project}
 
 \item{maxAL}{maxAL}
 

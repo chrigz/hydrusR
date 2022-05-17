@@ -7,9 +7,9 @@
 write.print.times(project.path, tmin, tmax, tstep, TimeUnit)
 }
 \arguments{
-\item{project.path}{Location of the H1D project in the directory}
+\item{project.path}{Path of the HYDRUS1D project}
 
-\item{tmin}{Begining print time (e.g., 1)}
+\item{tmin}{Beginning print time (e.g., 1)}
 
 \item{tmax}{End print time (e.g. 240 hours)}
 

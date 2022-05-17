@@ -7,7 +7,7 @@
 write.obs.nodes(project.path, obs.nodes = NULL)
 }
 \arguments{
-\item{project.path}{path to the hydrus project}
+\item{project.path}{Path of the HYDRUS1D project}
 
 \item{obs.nodes}{Observation nodes}
 }

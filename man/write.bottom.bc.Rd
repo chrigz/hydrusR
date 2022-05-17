@@ -4,16 +4,16 @@
 \alias{write.bottom.bc}
 \title{Write bottom Boundary Condition}
 \usage{
-write.bottom.bc(constant.bc, bc.type, bc.value, project.path)
+write.bottom.bc(project.path, constant.bc, bc.type, bc.value)
 }
 \arguments{
+\item{project.path}{Path of the HYDRUS1D project}
+
 \item{constant.bc}{constant.bc}
 
 \item{bc.type}{bc.type}
 
 \item{bc.value}{bc.value}
-
-\item{project.path}{project.path}
 }
 \value{
 Write bottom Boundary Condition to "SELECTOR.IN"

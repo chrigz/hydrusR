@@ -1,6 +1,6 @@
 #' Write atmospheric boundary condition inputs
 #'
-#' @param project.path project.path
+#' @param project.path Path of the HYDRUS1D project
 #' @param maxAL maxAL
 #' @param deltaT deltaT
 #' @param atm.bc.data atm.bc.data

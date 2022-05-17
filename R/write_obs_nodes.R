@@ -1,6 +1,6 @@
 #' Write observation nodes in profile.dat
 #'
-#' @param project.path path to the hydrus project
+#' @param project.path Path of the HYDRUS1D project
 #' @param obs.nodes Observation nodes
 #'
 #' @export
