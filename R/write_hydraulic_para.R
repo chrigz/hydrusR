@@ -1,14 +1,14 @@
 #' Write soil hydraulic parameters to selector.in
 #'
-#' @param project.path project.path
-#' @param model model id (default: 0)
-#' @param hysteresis hysteresis (default: 0)
-#' @param para para
+#' @param project.path Path of the HYDRUS1D project
+#' @param model Integer (default: 0) defining which model should be used
+#' @param hysteresis Integer (default: 0) indicating whether hysteresis is considered
+#' @param para Named list of parameters. Each parameter can be a single number or a vector if there is more than one material
 #'
 #' @return Write soil hydraulic parameters to "selector.in"
 #' @export
 #'
-#' @details Available soil moisture retention models in the hydrus1D
+#' @details Available soil moisture retention models in the hydrus1D:
 #' van Genuchten (VG)
 #' 6 parameter van Genuchten (VGM),
 #' Brooks Corey (BC)
@@ -72,6 +72,8 @@ input_data = readLines(con = file.path(project.path, "SELECTOR.IN"),
       para_line_fmt = mapply(FUN = sprintf, input_para_name, fmt = para_name_fmt_vec[1:length(input_para_name)])
       para_line_new = paste(para_line_fmt, collapse = "")
 
+      flow_block[para_line_ind] = para_line_new
+
       #       para_values = flow_block[para_line_ind + 1]
       # para_values_split = unlist(strsplit(para_values, split = " "))
       # para_values_split = para_values_split[para_values_split != ""]
@@ -85,16 +87,22 @@ input_data = readLines(con = file.path(project.path, "SELECTOR.IN"),
       #                     para$Alfa, para$n,
       #                     para$Ks, para$l)
 
-      para_values =  unlist(para[input_para_name])
 
-      value_format_vec = c("%7.4f", "%8.4f", "%8.4f", "%8.3f", "%11.5f", "%8.2f", "%8.3f", "%8.3f", "%11.3f", "%8.3f")
-      para_values_fmt = sprintf(fmt = value_format_vec[1:length(para_values)], para_values)
-      para_values_new = paste(para_values_fmt, collapse = "")
+      para_values = as.data.frame(para[input_para_name])
 
-      flow_block[para_line_ind] = para_line_new
-      flow_block[para_line_ind+1] = para_values_new
+      value_format_vec = c("%7.4f", "%8.4f", "%8.4f", "%8.3f", "%11.3f", "%8.2f", "%8.3f", "%8.3f", "%11.3f", "%8.3f")
+      for (i in 1:nrow(para_values)) {
+              para_values_fmt = sprintf(fmt = value_format_vec[1:length(para_values)], para_values[i,])
+              para_values_new = paste(para_values_fmt, collapse = "")
 
-      input_data[flow_block_ind : (time_block_ind - 1)] = flow_block
+              flow_block[para_line_ind+i] = para_values_new
+      }
+
+
+
+      input_data = c(input_data[1:flow_block_ind-1],
+                     flow_block,
+                     input_data[time_block_ind:length(input_data)])
 
       write(input_data, file =  file.path(project.path, "SELECTOR.IN"), append = F)
 

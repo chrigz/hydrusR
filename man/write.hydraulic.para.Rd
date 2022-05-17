@@ -7,13 +7,13 @@
 write.hydraulic.para(project.path, model = 0, hysteresis = 0, para)
 }
 \arguments{
-\item{project.path}{project.path}
+\item{project.path}{Path of the HYDRUS1D project}
 
-\item{model}{model id (default: 0)}
+\item{model}{Integer (default: 0) defining which model should be used}
 
-\item{hysteresis}{hysteresis (default: 0)}
+\item{hysteresis}{Integer (default: 0) indicating whether hysteresis is considered}
 
-\item{para}{para}
+\item{para}{Named list of parameters. Each parameter can be a single number or a vector if there is more than one material}
 }
 \value{
 Write soil hydraulic parameters to "selector.in"
@@ -22,7 +22,7 @@ Write soil hydraulic parameters to "selector.in"
 Write soil hydraulic parameters to selector.in
 }
 \details{
-Available soil moisture retention models in the hydrus1D
+Available soil moisture retention models in the hydrus1D:
 van Genuchten (VG)
 6 parameter van Genuchten (VGM),
 Brooks Corey (BC)
