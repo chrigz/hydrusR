@@ -1,14 +1,22 @@
 #' Write root distribution in profile.dat
 #'
-#' @param project.path project.path
+#' @param project.path Path of the HYDRUS1D project
 #' @param rdepth root depth
 #' @param rBeta default: 0.962
 #'
 #' @return Write root distribution in "PROFILE.DAT"
 #' @export
-
+#'
+#' @details Will write a root distribution to profile.dat assuming a specific root
+#' distribution with depth (rev(1 - rBeta^rdepth_coord)), which approaches 0 as
+#' depth approaches rdepth. The algorithm also assumes the depth discretization
+#' is uniform (i.e. same step size across the whole profile). If you want to
+#' write a different root distribution to profile.dat, you can create a vector of
+#' the desired root distribution and then write it to file with this function:
+#' write.profile.data(project.path, list(Beta = custom_root_distribution_vector))
+#'
 write.root.dist<- function(project.path, rdepth, rBeta = 0.962) {
-      file.profile.dat = file.path(project.path, "PROFILE.DAT")
+        file.profile.dat = file.path(project.path, "PROFILE.DAT")
         def_profile_data = readLines(con = file.profile.dat, n = -1L, encoding = "unknown")
 
         profile_summary = def_profile_data[1:4]
@@ -20,47 +28,47 @@ write.root.dist<- function(project.path, rdepth, rBeta = 0.962) {
         profile_body = def_profile_data[5:(5 + num_nodes - 1)]
 
 
-      node_info_lines = def_profile_data[(num_nodes + 5):(length(def_profile_data))]
+        node_info_lines = def_profile_data[(num_nodes + 5):(length(def_profile_data))]
 
-      header_split = unlist(strsplit(def_profile_data[4], split = " "))
-      header_split2 = header_split[header_split != ""]
+        header_split = unlist(strsplit(def_profile_data[4], split = " "))
+        header_split2 = header_split[header_split != ""]
 
-      profile_data_split = strsplit(profile_body, split = " ")
-      profile_data_split2 = sapply(profile_data_split, FUN = function(x) x[x!= ""])
-      profile_data_new = t(profile_data_split2)
+        profile_data_split = strsplit(profile_body, split = " ")
+        profile_data_split2 = sapply(profile_data_split, FUN = function(x) x[x!= ""])
+        profile_data_new = t(profile_data_split2)
 
-      deltaz = abs(as.numeric(profile_data_new[3, 2]) - as.numeric(profile_data_new[2, 2]))
+        deltaz = abs(as.numeric(profile_data_new[3, 2]) - as.numeric(profile_data_new[2, 2]))
 
-      rdepth_coord = seq(0, rdepth, by = deltaz)
+        rdepth_coord = seq(0, rdepth, by = deltaz)
 
-      rdist = 1 - rBeta^rdepth_coord
+        rdist = 1 - rBeta^rdepth_coord
 
-      rdist = rev(rdist)
-      rdist = c(1, rdist)
-      rdist_new = numeric(nrow(profile_data_new))
-      rdist_new[1:length(rdist)] = rdist
+        rdist = rev(rdist)
+        rdist = c(1, rdist)
+        rdist_new = numeric(nrow(profile_data_new))
+        rdist_new[1:length(rdist)] = rdist
 
-      root_dist_fmt = mapply(FUN = format2sci, rdist_new, ndec = 6, power.digits = 3)
+        root_dist_fmt = mapply(FUN = format2sci, rdist_new, ndec = 6, power.digits = 3)
 
-      profile_data_new[1:length(root_dist_fmt), 6] = root_dist_fmt
+        profile_data_new[1:length(root_dist_fmt), 6] = root_dist_fmt
 
-      fmt_space = c(5, 15, 15, 5, 5, 15, 15, 15, 15, 15, 15)
-      fmt_vec = paste("%", fmt_space, "s", sep = "")
-      fmt_vec = fmt_vec[1:ncol(profile_data_new)]
+        fmt_space = c(5, 15, 15, 5, 5, 15, 15, 15, 15, 15, 15)
+        fmt_vec = paste("%", fmt_space, "s", sep = "")
+        fmt_vec = fmt_vec[1:ncol(profile_data_new)]
 
-      profile_data_fmt = profile_data_new
-      for(n in 1:nrow(profile_data_new)){
+        profile_data_fmt = profile_data_new
+        for(n in 1:nrow(profile_data_new)){
 
-            profile_data_fmt[n, ] = sprintf(fmt_vec, profile_data_new[n, ])
-      }
+                profile_data_fmt[n, ] = sprintf(fmt_vec, profile_data_new[n, ])
+        }
 
-      tspace = sprintf("%13s", "")
-      profile_data_fmt2 = apply(profile_data_fmt, MARGIN = 1, FUN = paste, collapse = "")
-      profile_data_fmt2 = paste(profile_data_fmt2, tspace)
+        tspace = sprintf("%13s", "")
+        profile_data_fmt2 = apply(profile_data_fmt, MARGIN = 1, FUN = paste, collapse = "")
+        profile_data_fmt2 = paste(profile_data_fmt2, tspace)
 
-      profile_data_new = c(profile_summary, profile_data_fmt2, node_info_lines)
+        profile_data_new = c(profile_summary, profile_data_fmt2, node_info_lines)
 
-      write(profile_data_new, file.profile.dat, append = FALSE)
+        write(profile_data_new, file.profile.dat, append = FALSE)
 
 }
 

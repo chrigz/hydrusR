@@ -7,7 +7,7 @@
 write.root.dist(project.path, rdepth, rBeta = 0.962)
 }
 \arguments{
-\item{project.path}{project.path}
+\item{project.path}{Path of the HYDRUS1D project}
 
 \item{rdepth}{root depth}
 
@@ -18,4 +18,13 @@ Write root distribution in "PROFILE.DAT"
 }
 \description{
 Write root distribution in profile.dat
+}
+\details{
+Will write a root distribution to profile.dat assuming a specific root
+distribution with depth (rev(1 - rBeta^rdepth_coord)), which approaches 0 as
+depth approaches rdepth. The algorithm also assumes the depth discretization
+is uniform (i.e. same step size across the whole profile). If you want to
+write a different root distribution to profile.dat, you can create a vector of
+the desired root distribution and then write it to file with this function:
+write.profile.data(project.path, list(Beta = custom_root_distribution_vector))
 }
