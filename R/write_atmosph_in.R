@@ -5,8 +5,8 @@
 #' @param deltaT deltaT
 #' @param atm.bc.data atm.bc.data
 #' @param hCritS default: 0
-#' @param input.pet default: T
-#' @param LAI  default: 0.39
+#' @param input.pet default: T Should LAI be used?
+#' @param LAI  default: 0.39 (optional)
 #'
 #' @return write ATMOSPH.IN
 #' @export
@@ -18,22 +18,30 @@ write.atmosph.in<- function(project.path, maxAL, deltaT,
 
         out.file = "ATMOSPH.IN"
         # default.filename = "ATMOSPH.IN"
-        template_atmosph_in = system.file("templates/ATMOSPH.IN", package = "hydrusR")
-        atm_data = readLines(con = template_atmosph_in, n = -1L, encoding = "unknown")
-
-        if(file.exists(file.path(project.path, out.file))){
-                file.remove(file.path(project.path, out.file))
-        }
-        extinction_ind = grep("Extinction", atm_data)
-
-        # atm_data_bak = atm_data
 
         if(input.pet == TRUE){
+                template_atmosph_in = system.file("templates/ATMOSPH.IN", package = "hydrusR")
+                atm_data = readLines(con = template_atmosph_in, n = -1L, encoding = "unknown")
+
+                if(file.exists(file.path(project.path, out.file))){
+                        file.remove(file.path(project.path, out.file))
+                }
+                extinction_ind = grep("Extinction", atm_data)
+
+                # atm_data_bak = atm_data
                 atm_data = atm_data
                 atm_data[(extinction_ind + 1)] = sprintf("%8s", LAI)
 
         } else {
-                atm_data = atm_data[-c(extinction_ind, extinction_ind + 1)]
+                template_atmosph_in = system.file("templates/ATMOSPH_NoLAI.IN", package = "hydrusR")
+                atm_data = readLines(con = template_atmosph_in, n = -1L, encoding = "unknown")
+
+                if(file.exists(file.path(project.path, out.file))){
+                        file.remove(file.path(project.path, out.file))
+                }
+
+                # atm_data_bak = atm_data
+
 
         }
 
@@ -56,9 +64,16 @@ write.atmosph.in<- function(project.path, maxAL, deltaT,
         # tAtm = seq(deltaT, tMax, by = deltaT)
 
         bc_data_vars = c("tAtm", "Prec", "rSoil", "rRoot", "hCritA", "rB",
-                         "hB", "ht")
+                         "hB", "ht", "tTop", "tBot", "Ampl", "cTop", "cBot", "RootDepth")
 
-        bc_data_new = atm.bc.data[1:maxAL, bc_data_vars]
+        if (maxAL == 1) {
+                bc_data_new = atm.bc.data[bc_data_vars]
+                # bc_data_new[is.na(bc_data_new)] = ""
+        } else {
+                bc_data_new = atm.bc.data[1:maxAL, bc_data_vars]
+                # bc_data_new[is.na(bc_data_new)] = ""
+        }
+
         # bc_data_new = data.frame(tAtm = seq(deltaT, tMax, deltaT), bc_data_new, row.names = NULL)
         #  bc_data_new = bc_data_new[rep(seq_len(nrow(bc_data_new)), each = 4), ]
         #  bc_data_new$tAtm = seq(deltaT, tMax, by = deltaT)
@@ -71,10 +86,17 @@ write.atmosph.in<- function(project.path, maxAL, deltaT,
 
         bc_data_fmt = bc_data_new
 
-        for(a in 1:nrow(bc_data_fmt)) {
-                bc_data_fmt[a, ] = sprintf(fmt = fmt_vec[1:ncol(bc_data_fmt)], bc_data_new[a, ])
+        if (maxAL == 1) {
+                bc_data_fmt = sprintf(fmt = fmt_vec[1:length(bc_data_fmt)], bc_data_new)
+                bc_data_fmt = paste(bc_data_fmt, collapse = "")
+                bc_data_fmt = gsub("NA","  ",bc_data_fmt)
+        } else {
+                for(a in 1:nrow(bc_data_fmt)) {
+                        bc_data_fmt[a, ] = sprintf(fmt = fmt_vec[1:ncol(bc_data_fmt)], bc_data_new[a, ])
+                }
+                bc_data_fmt = apply(bc_data_fmt, MARGIN = 1, FUN = paste, collapse = "")
         }
-        bc_data_fmt = apply(bc_data_fmt, MARGIN = 1, FUN = paste, collapse = "")
+
 
         atm_input1 = atm_data[1:tAtm_ind]
         atm_input2 = bc_data_fmt

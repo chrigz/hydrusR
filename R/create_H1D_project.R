@@ -45,16 +45,20 @@ create.H1D.project <- function(project.name, parent.dir, discription = NULL,
 
  if(dir.exists(project_path)) {
 
-            dir_answer = readline(prompt = disp_msg)
-            dir_answer = substr(toupper(dir_answer), start = 1, stop = 1)
+         if(interactive()) {
+                 dir_answer = readline(prompt = disp_msg)
+                 dir_answer = substr(toupper(dir_answer), start = 1, stop = 1)
+         } else {
+                 dir_answer = "Y"
+         }
 
-            if(dir_answer == "Y") {
-                  unlink(project_path, recursive = TRUE, force = TRUE)
-                  dir.create(project_path)
-            } else {
-                  stop("HYDRUS1D project not created\n")
+         if(dir_answer == "Y") {
+                 unlink(project_path, recursive = TRUE, force = TRUE)
+                 dir.create(project_path)
+         } else {
+                 stop("HYDRUS1D project not created\n")
 
-            }
+         }
       } else {
             dir.create(project_path)
       }

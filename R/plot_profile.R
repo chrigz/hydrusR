@@ -1,3 +1,78 @@
+
+#' Plot profile generic
+#'
+#' @param project.path project.path
+#' @param output default: "Head"
+#'
+#' @return ggplot object of profile
+#' @export
+#'
+plot_profile.last <- function(project.paths, output = "Head", measured){
+
+        h1d_output = list()
+        for (path in project.paths) {
+                temp_output = hydrusR::read.nod_inf(path,
+                                                    out.file = "Nod_Inf.out",
+                                                    output = output)
+                temp_output = dplyr::filter(temp_output, Time == max(temp_output$Time))
+
+                temp_output$model = gsub(".{,20}/","",path)
+
+        h1d_output = append(h1d_output, list(temp_output))
+        }
+
+        ggplot2::ggplot(data = h1d_output[[1]],
+                        mapping = ggplot2::aes(x = !!rlang::ensym(output),
+                                               y = Depth)
+                        ) ->
+                plot_obj
+
+
+        fit_data <- tibble::tibble(r_squared = 0, x_pos = 0, .rows = length(h1d_output))
+
+        for (i in 1:length(h1d_output)) {
+                # calculate r squared
+                # approx(x = tibble::deframe(dplyr::select(h1d_output[[i]], Depth)),
+                approx(x = h1d_output[[i]]$Depth,
+                       y = tibble::deframe(dplyr::select(h1d_output[[i]], !!rlang::ensym(output))),
+                       xout = measured$Depth, rule = 2) ->
+                        model_values
+
+                cor(model_values$y,
+                    dplyr::select(measured, !!rlang::ensym(output)),
+                    use = "na.or.complete")^2 ->
+                        fit_data$r_squared[i]
+
+                mean(model_values$y) ->
+                        fit_data$x_pos[i]
+
+
+                plot_obj +
+                        ggplot2::geom_path(data = h1d_output[[i]], mapping = ggplot2::aes(linetype = model)) ->
+                        plot_obj
+
+
+
+
+        }
+
+        dplyr::mutate(fit_data, y_pos = mean(measured$Depth),
+                      label = paste0("R2 = ", round(r_squared, digits = 2))) ->
+                fit_data
+
+        plot_obj +
+                ggplot2::geom_point(data = measured) +
+                ggplot2::geom_text(data = fit_data, mapping = ggplot2::aes(x = x_pos,
+                                                                       y = y_pos,
+                                                                       label = label)) +
+                ggplot2::theme_bw()
+
+
+
+}
+
+
+
 #' Plot pressure profile
 #'
 #' @param project.path project.path
