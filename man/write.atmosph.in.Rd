@@ -25,9 +25,9 @@ write.atmosph.in(
 
 \item{hCritS}{default: 0}
 
-\item{input.pet}{default: T}
+\item{input.pet}{default: T Should LAI be used?}
 
-\item{LAI}{default: 0.39}
+\item{LAI}{default: 0.39 (optional)}
 }
 \value{
 write ATMOSPH.IN

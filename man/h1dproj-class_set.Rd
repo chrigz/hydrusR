@@ -11,3 +11,9 @@
 \description{
 Set H1D Project Class
 }
+\section{Slots}{
+
+\describe{
+\item{\code{balance}}{A length-one numeric vector}
+}}
+

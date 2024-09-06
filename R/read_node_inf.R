@@ -3,7 +3,7 @@
 #' @param project.path Path to the H1D project
 #' @param out.file ## Name of the Nod_Inf.out file, in case saved to different name
 #' @param output Vector of output types to be read (e.g., "Head", "Moisture", "Flux")
-#' Default is NULL, meaning all the outputs is read.
+#' Default is NULL, meaning all the outputs are read.
 #' @param warn Should the warning of coercion of character to NA be shown
 #' @param asDT  as data.table (default: TRUE) or data.frame (FALSE)
 #'
